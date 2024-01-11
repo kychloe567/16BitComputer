@@ -1,0 +1,3 @@
+MOV ax 14
+ADD 15
+OUT ax
