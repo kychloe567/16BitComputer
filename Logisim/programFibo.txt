@@ -1,0 +1,10 @@
+MOV ax 0
+MOV bx 1
+OUT ax
+OUT bx
+ADD
+out ax
+mov [240] ax
+mov ax, bx
+mov bx [240]
+j 4

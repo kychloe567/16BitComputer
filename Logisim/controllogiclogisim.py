@@ -24,9 +24,9 @@ microcodesIndex =                                                     \
 "M_OUT"         : 19,                                                 \
 "I_IN"          : 20,                                                 \
 "I_OUT"         : 21,                                                 \
-"I_RST"         : 23,                                                 \
-"CLC_RST"       : 24,                                                 \
-"HALT"          : 25                                                  \
+"I_RST"         : 22,                                                 \
+"CLC_RST"       : 23,                                                 \
+"HALT"          : 24                                                  \
 }
 
 inverted_microcodesIndex = {v: k for k, v in microcodesIndex.items()}
@@ -59,9 +59,6 @@ def loadMicrocodeForControlLogic():
 
     for line in data:
         values = line.strip().split("\t")
-
-        if values[0][0] == "?":
-            continue
         
         #[[Instruction],[Steps], ZF, CF, [OUTPUT]]
         InstructionName = values[0]
@@ -88,23 +85,34 @@ def loadMicrocodeForControlLogic():
         ZC = values[4]
         ControlStepsIndexed = [[microcodesIndex[y.strip()] for y in x.split(',')] for x in values[5:]]
 
-        
+        asd = []
         for step in range(0,16):
             stepBin = binStringToList(toBinary(step, 4))
             if step == 0:
-                controlLogicRaw.append([binStringToList(Code), stepBin, int(ZC[0]), int(ZC[1]), convertControlToBinList(fetchSteps[0]), InstructionName, convertToControls(convertControlToBinList(fetchSteps[0]))])
+                asd.append([binStringToList(Code), stepBin, int(ZC[0]), int(ZC[1]), convertControlToBinList(fetchSteps[0]), InstructionName, convertToControls(convertControlToBinList(fetchSteps[0]))])
             elif step == 1:
-                controlLogicRaw.append([binStringToList(Code), stepBin, int(ZC[0]), int(ZC[1]), convertControlToBinList(fetchSteps[1]), InstructionName, convertToControls(convertControlToBinList(fetchSteps[1]))])
+                asd.append([binStringToList(Code), stepBin, int(ZC[0]), int(ZC[1]), convertControlToBinList(fetchSteps[1]), InstructionName, convertToControls(convertControlToBinList(fetchSteps[1]))])
             elif step <= len(ControlStepsIndexed)+1:
-                controlLogicRaw.append([binStringToList(Code), stepBin, int(ZC[0]), int(ZC[1]), convertControlToBinList(ControlStepsIndexed[step-2]), InstructionName, convertToControls(convertControlToBinList(ControlStepsIndexed[step-2]))])
+                asd.append([binStringToList(Code), stepBin, int(ZC[0]), int(ZC[1]), convertControlToBinList(ControlStepsIndexed[step-2]), InstructionName, convertToControls(convertControlToBinList(ControlStepsIndexed[step-2]))])
             else:
-                controlLogicRaw.append([binStringToList(Code), stepBin, int(ZC[0]), int(ZC[1]), binStringToList("0"*32), InstructionName, convertToControls(binStringToList("0"*32))])    
+                asd.append([binStringToList(Code), stepBin, int(ZC[0]), int(ZC[1]), binStringToList("0"*32), InstructionName, convertToControls(binStringToList("0"*32))])    
+        controlLogicRaw = controlLogicRaw + asd
                 
     return controlLogicRaw
 
+def sort_elements(elements):
+    def element_to_binary(element):
+        binary_sequence = element[0] + element[1] + [element[2], element[3]] 
+
+        return int(''.join(map(str, binary_sequence)), 2)
+
+    return sorted(elements, key=element_to_binary)
+
 
 a = loadMicrocodeForControlLogic()
+a = sort_elements(a)
 lines = ""
+lines2 = ""
 isOpened = False
 x = 0
 for b in a:
@@ -117,25 +125,32 @@ for b in a:
         y = 5
     print(str(x) + ": " , b)
     """
-    print(str(x) + ": " , b)
-    if b[0] == [0, 0, 0, 0, 0, 0, 1, 0]:
-        y = 5
+    #print(str(x) + ": " , b)
+    hexadecimal_value = format(int(b[4], 2), '08X')
+
+    lines2 += hexadecimal_value + " " + "".join([str(i) for i in b[0]]) + "".join([str(i) for i in b[1]]) + str(b[2]) + str(b[3]) + "\t" + b[4] + str(b) + "\n"
+    #189:  [[0, 0, 0, 0, 0, 0, 1, 0], [1, 1, 0, 1], 1, 1, '00000000000000000000000000000000', 'MOV', '']
+    #if b[0] == [0, 0, 0, 0, 0, 0, 1, 0]:
+    #    y = 5
     x += 1
 
-    hexadecimal_value = format(int(b[4], 2), '04X')
-    if isOpened:
-        if len(hexadecimal_value) == 4:
-            lines += hexadecimal_value + " "
-            isOpened = False
-        else:
-            lines += hexadecimal_value[0:4] + " " + hexadecimal_value[4:8]
-    else:
-        if len(hexadecimal_value) == 4:
-            lines += hexadecimal_value
-            isOpened = True
-        else:
-            lines += hexadecimal_value + " "
+    
+    lines += hexadecimal_value + " "
+    #if isOpened:
+    #    if len(hexadecimal_value) == 4:
+    #        lines += hexadecimal_value + " "
+    #        isOpened = False
+    #    else:
+    #        lines += hexadecimal_value[0:4] + " " + hexadecimal_value[4:8]
+    #else:
+    #    if len(hexadecimal_value) == 4:
+    #        lines += hexadecimal_value
+    #        isOpened = True
+    #    else:
+    #        lines += hexadecimal_value + " "
 
 if True:
     with open("controllogicdata.txt","w") as f:
         f.write(lines)
+    with open("test1.txt","w") as f:
+        f.write(lines2)

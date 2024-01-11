@@ -1,0 +1,6 @@
+mov ax 0
+mov bx 1
+out ax
+add
+out ax
+j 3

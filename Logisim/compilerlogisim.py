@@ -25,9 +25,9 @@ microcodesIndex =                                                     \
 "M_OUT"         : 19,                                                 \
 "I_IN"          : 20,                                                 \
 "I_OUT"         : 21,                                                 \
-"I_RST"         : 23,                                                 \
-"CLC_RST"       : 24,                                                 \
-"HALT"          : 25                                                  \
+"I_RST"         : 22,                                                 \
+"CLC_RST"       : 23,                                                 \
+"HALT"          : 24                                                  \
 }
 
 def binStringToList(s):
@@ -204,7 +204,7 @@ def compileProgram(filename, endOfCode):
     return ramData
 
 
-a = compileProgram("program.txt", endOfCode="halt")
+a = compileProgram("programAdder.txt", endOfCode="halt")
 lines = ""
 for b in a:
     c = b[1] + b[2]
@@ -212,6 +212,9 @@ for b in a:
     print(c)
     hexadecimal_value = format(int(c, 2), '04X')
     lines += hexadecimal_value + " "
+
+
+lines += "FFFF "
 
 with open("ramdata.txt","w") as f:
     f.write(lines)
