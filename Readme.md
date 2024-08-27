@@ -8,7 +8,8 @@ Feel free to explore the documentation, check out the schematics, and get starte
 <p align="center" >
   <a href="#features">Features</a> •
   <a href="#Files">Files</a> •
-  <a href="#packages">Packages</a>   
+  <a href="#packages">Packages</a> •
+  <a href="#images">Images</a>   
 </p>
 
 ## Features
@@ -114,3 +115,13 @@ This software uses the following programs and open source packages:
 
 - [EasyEDA](https://easyeda.com/)
 - [Python](https://www.python.org/)
+
+## Images
+
+3D Render:
+
+![](https://github.com/kychloe567/16BitComputer/blob/main/Output_images/complete_3d.png)
+
+Schematic render with both layers:
+
+![](https://github.com/kychloe567/16BitComputer/blob/main/Output_images/complete_color.png)
